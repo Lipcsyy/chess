@@ -307,6 +307,8 @@ public class ChessModel implements Serializable {
     private void promotePawn( Piece selectedPiece, int row, int col ) {
         removePiece( row, col );
         pieces.add( new Queen( this, row, col, selectedPiece.isWhite ));
+        setSelectedPiece( pieces.get( pieces.size() - 1 ) );
+        setBoardFromPieces( pieces );
     }
 
     private void pawnMove( Piece selectedPiece, int row, int col, boolean shouldUpdateUI ) {
@@ -337,11 +339,12 @@ public class ChessModel implements Serializable {
         if ( row == colorIndex ) {
             promotePawn(selectedPiece, row, col);
         }
-
-        if  ( shouldUpdateUI ) {
-            setPiecePosition( row, col );
-            gameStates.clear();//after a move was made we clear the gameStates
-            addToGameState();
+        else {
+            if ( shouldUpdateUI ) {
+                setPiecePosition( row, col );
+                gameStates.clear();//after a move was made we clear the gameStates
+                addToGameState();
+            }
         }
 
     }
@@ -506,5 +509,52 @@ public class ChessModel implements Serializable {
 
     }
 
+
+    public List< Piece> getPiecesFromBoard() {
+
+       List< Piece > piecesFromBoard = new ArrayList< Piece >();
+
+       for ( int row = 0; row < 8; row++ ){
+           for ( int col = 0; col < 8; col++) {
+
+               char piece = chessboard[row][col];
+
+               if ( piece != ' ' ) {
+
+                   boolean isWhite = !Character.isLowerCase( piece );
+
+                   ChessBoard board = controller.getBoard();
+
+                   switch ( Character.toLowerCase( piece ) ) {
+                       case 'n' -> piecesFromBoard.add( new Knight( this, row, col, isWhite ) );
+                       case 'p' -> piecesFromBoard.add( new Pawn( this, row, col, isWhite ) );
+                       case 'q' -> piecesFromBoard.add( new Queen( this, row, col, isWhite ) );
+                       case 'b' -> piecesFromBoard.add( new Bishop( this, row, col, isWhite ) );
+                       case 'r' -> piecesFromBoard.add( new Rook( this, row, col, isWhite ) );
+                       case 'k' -> piecesFromBoard.add( new King( this, row, col, isWhite ) );
+                   }
+               }
+           }
+       }
+
+       return piecesFromBoard;
+   }
+
+    public void setBoardFromPieces( List< Piece > pieces ) {
+
+        char[][] chessboard = new char[8][8];
+
+        for ( int row = 0; row < 8; row++ ){
+            for ( int col = 0; col < 8; col++) {
+                chessboard[row][col] = ' ';
+            }
+        }
+
+        for ( Piece piece : pieces ) {
+            chessboard[piece.row][piece.col] = piece.name;
+        }
+
+        this.chessboard = chessboard;
+    }
 
 }
