@@ -22,23 +22,34 @@ public class ChessBoard extends JPanel{
 
     private ChessController controller;
 
+    /**
+     * The constructor for the ChessBoard class.
+     * It initializes the controller and sets up the size, layout, and color of the board.
+     *
+     * @param _controller The controller for the chess game
+     */
     public ChessBoard( ChessController _controller ) {
 
         this.controller = _controller;
 
-        // -- The size of the board --
+        // Set the size of the board
         this.setPreferredSize( new Dimension(rows*tileSize, cols*tileSize) );
         this.setMaximumSize( new Dimension(rows*tileSize, cols*tileSize) );
         this.setMinimumSize( new Dimension(rows*tileSize, cols*tileSize) );
 
-        // -- The layout of the board --
+        // The layout of the board is commented out
         //this.setLayout( new GridLayout(8, 8) );
 
-        // -- The color of the board --
+        // The color of the board is commented out
         //paintBoard( Color.decode("#F5E8B7"), Color.decode( "#B2533E" ), chessboard );
 
     }
 
+    /**
+     * This method is used to paint the board.
+     *
+     * @param g The Graphics object to be used to paint the board
+     */
     @Override
     public void paintComponent(Graphics g) {
 
@@ -74,6 +85,14 @@ public class ChessBoard extends JPanel{
 
     }
 
+
+    /**
+     * This method is used to add a click listener to the chessboard.
+     * It takes a MouseAdapter object as an argument and adds it as a mouse listener and a mouse motion listener to the chessboard.
+     * The mouse listener is used to handle mouse click events, and the mouse motion listener is used to handle mouse movement events.
+     *
+     * @param mouseAdapter The MouseAdapter object to be added as a click listener
+     */
     public void addClickListener ( MouseAdapter mouseAdapter ) {
         this.addMouseListener( mouseAdapter );
         this.addMouseMotionListener( mouseAdapter );

@@ -5,10 +5,20 @@ import Pieces.Piece;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The CheckScanner class is responsible for checking if the king is in check.
+ * It contains a reference to the ChessModel to access the game state.
+ */
 public class CheckScanner {
 
     ChessModel model;
 
+    /**
+     * The constructor for the CheckScanner class.
+     * It initializes the model.
+     *
+     * @param _model The model for the chess game
+     */
     public CheckScanner( ChessModel _model ) {
         this.model = _model;
     }
@@ -61,6 +71,7 @@ public class CheckScanner {
 
         model.setPiecesList( new ArrayList<>(pieceListCopy) ) ;
         model.setSelectedPiece( model.getPiecesList().get( selectedPieceIndex ) );
+        model.setBoardFromPieces( model.getPiecesList() );
 
         return result;
 

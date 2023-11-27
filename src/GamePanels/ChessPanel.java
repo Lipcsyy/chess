@@ -23,8 +23,5 @@ public class ChessPanel extends JPanel {
         return controller;
     }
 
-    public void setPanelToShow (  ) {
-        gameFrame.showChessGame();
-    }
 
 }

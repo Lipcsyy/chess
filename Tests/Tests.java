@@ -25,9 +25,9 @@ public class Tests {
     }
 
     private void makeMove( int moveToRow, int moveToColumn ) {
-        chessModel.updateBoard( moveToRow, moveToColumn );
         if(chessModel.isMovePseudoLegal( moveToRow, moveToColumn )) {
             chessModel.move( chessModel.getSelectedPiece(), moveToRow, moveToColumn, true );
+            chessModel.updateBoard( moveToRow, moveToColumn );
         }
     }
 
@@ -73,10 +73,7 @@ public class Tests {
             int moveToRow = 4;
             int moveToCol = 4;
 
-            chessModel.updateBoard( moveToRow, moveToCol );
-            if(chessModel.isMovePseudoLegal( moveToRow, moveToCol )) {
-                chessModel.move( chessModel.getSelectedPiece(), moveToRow, moveToCol, true );
-            }
+            makeMove( moveToRow, moveToCol );
 
             var chessboard = chessModel.getChessboard();
 
@@ -125,6 +122,7 @@ public class Tests {
     public void isKnightMoveValid() {
 
             chessModel.setSelectedPiece( chessModel.getPiece( 7, 1 ) );
+
             int moveToRow = 5;
             int moveToColumn = 2;
 
@@ -423,10 +421,7 @@ public class Tests {
         int moveToRow = 2;
         int moveToColumn = 2;
 
-        chessModel.updateBoard( moveToRow, moveToColumn );
-        if(chessModel.isMovePseudoLegal( moveToRow, moveToColumn )) {
-            chessModel.move( chessModel.getSelectedPiece(), moveToRow, moveToColumn, true );
-        }
+        makeMove( moveToRow, moveToColumn );
 
         var chessboard = chessModel.getChessboard();
 
@@ -797,9 +792,9 @@ public class Tests {
 
         char[][] board = new char[][]{
                 { 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r' },
-                { 'p', 'p', 'p', ' ', 'p', ' ', 'p', 'p' },
+                { 'p', 'p', 'p', ' ', 'p', 'p', 'p', 'p' },
                 { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
-                { ' ', ' ', ' ', ' ', 'P', 'p', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', 'P', ' ', ' ', ' ' },
                 { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
                 { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
                 { 'P', 'P', 'P', 'P', ' ', 'P', 'P', 'P' },
@@ -809,19 +804,28 @@ public class Tests {
 
         chessModel.setChessboard(board);
         chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( false );
+        chessModel.setSelectedPiece( chessModel.getPiece( 1, 5 ) );
+
+        int moveToRow = 3;
+        int moveToColumn = 5;
+        makeMove( moveToRow, moveToColumn );
+
+
         chessModel.setWhiteNextTurn( true );
         chessModel.setSelectedPiece( chessModel.getPiece( 3, 4 ) );
 
-        int moveToRow = 2;
-        int moveToColumn = 5;
-
+        moveToRow = 2;
+        moveToColumn = 5;
         makeMove( moveToRow, moveToColumn );
+
+        chessModel.setBoardFromPieces( chessModel.getPiecesList() );
 
         char[][] board2 = new char[][]{
                 { 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r' },
                 { 'p', 'p', 'p', ' ', 'p', ' ', 'p', 'p' },
                 { ' ', ' ', ' ', ' ', ' ', 'P', ' ', ' ' },
-                { ' ', ' ', ' ', ' ', ' ', 'p', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
                 { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
                 { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
                 { 'P', 'P', 'P', 'P', ' ', 'P', 'P', 'P' },
@@ -832,6 +836,7 @@ public class Tests {
         Assert.assertEquals( chessModel.getChessboard(), board2 );
     }
 
+    //Promotion test
     @Test
     public void doesPawnPromotionWork() {
 
@@ -861,8 +866,6 @@ public class Tests {
             chessModel.updateBoard( moveToRow, moveToColumn );
         }
 
-        chessModel.printGameState();
-
         char[][] board2 = new char[][]{
                 { 'Q', ' ', ' ', 'q', 'k', ' ', ' ', ' ' },
                 { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
@@ -876,6 +879,334 @@ public class Tests {
         };
 
         Assert.assertEquals( chessModel.getChessboard(), board2 );
+    }
+
+    //Checkmate test
+
+    @Test
+    public void isCheckmate() {
+
+        char[][] board = new char[][]{
+                { ' ', ' ', ' ', ' ', ' ', ' ', 'r', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', 'k', 'q' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', 'Q', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', 'R', 'K', ' ' },
+
+        };
+
+        chessModel.setChessboard(board);
+        chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( true );
+        chessModel.setSelectedPiece( chessModel.getPiece( 6, 5 ) );
+
+        int moveToRow = 2;
+        int moveToColumn = 5;
+
+        makeMove( moveToRow, moveToColumn );
+
+        Assert.assertTrue( chessModel.isCheckMate() );
+    }
+
+    @Test
+    public void isCheckMate2() {
+        char[][] board = new char[][]{
+                { ' ', ' ', ' ', 'k', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', 'R', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', 'Q', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', 'K', 'R' },
+
+        };
+
+        chessModel.setChessboard(board);
+        chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( true );
+        chessModel.setSelectedPiece( chessModel.getPiece( 7, 7 ) );
+
+        int moveToRow = 0;
+        int moveToColumn = 7;
+
+        makeMove( moveToRow, moveToColumn );
+
+        Assert.assertTrue( chessModel.isCheckMate() );
+    }
+
+    @Test
+    public void isCheckmate3() {
+        char[][] board = new char[][]{
+                { ' ', ' ', ' ', ' ', ' ', ' ', 'Q', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', 'K', ' ', 'k' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+
+        };
+
+        chessModel.setChessboard(board);
+        chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( true );
+        chessModel.setSelectedPiece( chessModel.getPiece( 0, 6 ) );
+
+        int moveToRow = 6;
+        int moveToColumn = 6;
+
+        makeMove( moveToRow, moveToColumn );
+
+        Assert.assertTrue( chessModel.isCheckMate() );
+    }
+
+    @Test
+    public void isCheckMate4()  {
+        char[][] board = new char[][]{
+            { ' ', ' ', ' ', ' ', ' ', ' ', 'k', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', 'K', ' ' },
+            { ' ', ' ', ' ', ' ', 'R', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+
+        };
+
+        chessModel.setChessboard(board);
+        chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( true );
+        chessModel.setSelectedPiece( chessModel.getPiece( 3, 4 ) );
+
+        int moveToRow = 0;
+        int moveToColumn = 4;
+
+        makeMove( moveToRow, moveToColumn );
+
+        Assert.assertTrue( chessModel.isCheckMate() );
+    }
+
+    @Test
+    public void isCheckMate5() {
+        char[][] board = new char[][]{
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', 'B', 'B', ' ', 'K', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'k' },
+
+        };
+
+        chessModel.setChessboard(board);
+        chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( true );
+        chessModel.setSelectedPiece( chessModel.getPiece( 5, 3 ) );
+
+        int moveToRow = 4;
+        int moveToColumn = 4;
+
+        makeMove( moveToRow, moveToColumn );
+
+        Assert.assertTrue( chessModel.isCheckMate() );
+    }
+
+    @Test
+    public void isCheckMate6() {
+        char[][] board = new char[][]{
+            { 'k', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { 'N', 'K', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', 'B', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+
+        };
+
+        chessModel.setChessboard(board);
+        chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( true );
+        chessModel.setSelectedPiece( chessModel.getPiece( 3, 1 ) );
+
+        int moveToRow = 2;
+        int moveToColumn = 2;
+
+        makeMove( moveToRow, moveToColumn );
+
+        Assert.assertTrue( chessModel.isCheckMate() );
+    }
+
+    //TEST DRAW
+    @Test
+    public void testDraw(){
+        char[][] board = new char[][]{
+            { ' ', ' ', ' ', ' ', 'k', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', 'K', ' ', ' ', ' ', 'Q' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+
+        };
+
+        chessModel.setChessboard(board);
+        chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( true );
+        chessModel.setSelectedPiece( chessModel.getPiece( 2, 7 ) );
+
+        int moveToRow = 2;
+        int moveToColumn = 5;
+
+        makeMove( moveToRow, moveToColumn );
+
+        Assert.assertTrue( chessModel.isDraw() );
+    }
+
+    @Test
+    public void testDraw2() {
+        char[][] board = new char[][]{
+            { 'k', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', 'Q', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', 'K', ' ' },
+
+        };
+
+        chessModel.setChessboard(board);
+        chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( true );
+        chessModel.setSelectedPiece( chessModel.getPiece( 1, 3 ) );
+
+        int moveToRow = 1;
+        int moveToColumn = 2;
+
+        makeMove( moveToRow, moveToColumn );
+
+        Assert.assertTrue( chessModel.isDraw() );
+    }
+
+    @Test
+    public void testDraw3() {
+        char[][] board = new char[][]{
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', 'k', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'p' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', 'K', ' ' },
+
+        };
+
+        chessModel.setChessboard(board);
+        chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( true );
+        chessModel.setSelectedPiece( chessModel.getPiece( 7, 6 ) );
+
+        int moveToRow = 6;
+        int moveToColumn = 7;
+
+        makeMove( moveToRow, moveToColumn );
+
+        Assert.assertTrue( chessModel.isDraw() );
+    }
+
+    @Test
+    public void testDraw4() {
+        char[][] board = new char[][]{
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', 'b', 'k' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'p' },
+            { ' ', ' ', ' ', ' ', ' ', ' ', 'K', ' ' },
+
+        };
+
+        chessModel.setChessboard(board);
+        chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( true );
+        chessModel.setSelectedPiece( chessModel.getPiece( 7, 6 ) );
+
+        int moveToRow = 6;
+        int moveToColumn = 7;
+
+        makeMove( moveToRow, moveToColumn );
+
+        Assert.assertTrue( chessModel.isDraw() );
+    }
+
+    @Test
+    public void testDraw5() {
+        char[][] board = new char[][]{
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', 'n', 'k' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'p' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', 'K', ' ' },
+
+        };
+
+        chessModel.setChessboard(board);
+        chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( true );
+        chessModel.setSelectedPiece( chessModel.getPiece( 7, 6 ) );
+
+        int moveToRow = 6;
+        int moveToColumn = 7;
+
+        makeMove( moveToRow, moveToColumn );
+
+        Assert.assertTrue( chessModel.isDraw() );
+    }
+
+    @Test
+    public void testDraw8() {
+        char[][] board = new char[][]{
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', 'b', 'k' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', 'B', ' ' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'p' },
+                { ' ', ' ', ' ', ' ', ' ', ' ', 'K', ' ' },
+
+        };
+
+        chessModel.setChessboard(board);
+        chessModel.setPiecesList( chessModel.getPiecesFromBoard() );
+        chessModel.setWhiteNextTurn( true );
+        chessModel.setSelectedPiece( chessModel.getPiece( 7, 6 ) );
+
+        int moveToRow = 6;
+        int moveToColumn = 7;
+
+        makeMove( moveToRow, moveToColumn );
+
+        Assert.assertTrue( chessModel.isDraw() );
     }
 
 }

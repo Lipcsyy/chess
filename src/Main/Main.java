@@ -1,25 +1,19 @@
 package Main;
 
-import GamePanels.ChessPanel;
 import GamePanels.GameFrame;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class Main {
 
-    public static void main(String[] args) {
+    /**
+     * The main method is the entry point of the Java application.
+     * It creates an instance of the GameFrame and makes it visible.
+     *
+     * @param args An array of command-line arguments for the application
+     */    public static void main(String[] args) {
 
         GameFrame gameFrame = new GameFrame();
 
         gameFrame.setVisible(true);
-
-        /*ChessController controller = new ChessController();
-
-        controller.chessView.setVisible(true);*/
 
     }
 }
